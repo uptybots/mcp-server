@@ -1,0 +1,44 @@
+{
+  "name": "uptybots-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for UptyBots — connect AI assistants to your uptime monitors",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "uptybots-mcp-server": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "uptybots",
+    "uptime",
+    "monitoring",
+    "claude",
+    "ai"
+  ],
+  "author": "UptyBots <support@uptybots.com> (https://uptybots.com)",
+  "license": "MIT",
+  "homepage": "https://uptybots.com/docs/mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oleprog-uptybots/mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oleprog-uptybots/mcp-server/issues"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "README.md"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.24.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
