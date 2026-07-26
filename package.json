@@ -1,11 +1,11 @@
 {
   "name": "uptybots-mcp-server",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "MCP server for UptyBots — connect AI assistants to your uptime monitors",
   "type": "module",
   "main": "index.js",
   "bin": {
-    "uptybots-mcp-server": "./index.js"
+    "uptybots-mcp-server": "index.js"
   },
   "scripts": {
     "start": "node index.js"
@@ -24,10 +24,10 @@
   "homepage": "https://uptybots.com/docs/mcp",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oleprog-uptybots/mcp-server.git"
+    "url": "git+https://github.com/uptybots/mcp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/oleprog-uptybots/mcp-server/issues"
+    "url": "https://github.com/uptybots/mcp-server/issues"
   },
   "files": [
     "index.js",

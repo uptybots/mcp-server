@@ -17,7 +17,7 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that g
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/oleprog-uptybots/mcp-server.git
+git clone https://github.com/uptybots/mcp-server.git
 cd mcp-server
 npm install
 ```
