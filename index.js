@@ -20,7 +20,7 @@ import {
 
 const server = new McpServer({
   name: 'uptybots',
-  version: '1.0.4',
+  version: '1.0.5',
 });
 
 // Helper: format tool result
