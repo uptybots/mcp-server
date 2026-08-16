@@ -14,7 +14,38 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that g
 
 ## Setup
 
-### 1. Clone and install
+### 1. Configure your AI client
+
+No install step needed: `npx` fetches the published package on first run.
+
+Add to your MCP client configuration:
+
+**Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "uptybots": {
+      "command": "npx",
+      "args": ["-y", "uptybots-mcp-server"],
+      "env": {
+        "UPTYBOTS_API_URL": "https://uptybots.com",
+        "UPTYBOTS_API_KEY": "upty_your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+**Claude Code** (`~/.claude/settings.json`) and **Cursor** (`.cursor/mcp.json`) use the same format.
+
+### 2. Restart your AI client
+
+The MCP tools will be available immediately.
+
+### Running from source (optional)
+
+To run a local checkout instead of the npm package:
 
 ```bash
 git clone https://github.com/uptybots/mcp-server.git
@@ -22,11 +53,7 @@ cd mcp-server
 npm install
 ```
 
-### 2. Configure your AI client
-
-Add to your MCP client configuration:
-
-**Claude Desktop** (`claude_desktop_config.json`):
+Then point the client at the checkout:
 
 ```json
 {
@@ -42,12 +69,6 @@ Add to your MCP client configuration:
   }
 }
 ```
-
-**Claude Code** (`~/.claude/settings.json`) and **Cursor** (`.cursor/mcp.json`) use the same format.
-
-### 3. Restart your AI client
-
-The MCP tools will be available immediately.
 
 ## Available Tools (15)
 
