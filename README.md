@@ -6,6 +6,30 @@ Connect AI assistants like **Claude**, **Cursor**, and other MCP-compatible tool
 
 An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that gives AI assistants access to your UptyBots monitoring data. Ask your AI to check monitor status, review incidents, create new monitors, and more — through natural conversation.
 
+## You probably want the hosted server instead
+
+There is now a remote server that needs no install and no API key:
+
+```
+https://mcp.uptybots.com/mcp
+```
+
+Add that URL to your client and it opens a browser for you to sign in and approve
+access. If you do not have an UptyBots account yet, you can create one at that step.
+
+With Claude Code:
+
+```bash
+claude mcp add --transport http uptybots https://mcp.uptybots.com/mcp
+```
+
+then run `/mcp`, pick **uptybots** and authenticate.
+
+**This package is the local alternative.** It runs on your own machine and
+authenticates with an API key instead of a browser sign-in — the right choice for
+MCP clients that cannot talk to remote servers, and for offline or self-contained
+setups. It exposes the same 15 tools and is not going away.
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 18 or later
@@ -108,8 +132,9 @@ Then point the client at the checkout:
 
 ## Documentation
 
-- [MCP Server Docs](https://uptybots.com/docs/mcp) — full setup guide and tool reference
+- [MCP Server Docs](https://uptybots.com/docs/mcp) — full setup guide and tool reference, covering both the hosted server and this one
 - [REST API Reference](https://uptybots.com/docs/api) — the API that powers the MCP server
+- [Account → Connected Applications](https://uptybots.com/account/connected-apps) — review and revoke access granted through the hosted server
 
 ## License
 
