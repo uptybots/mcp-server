@@ -142,19 +142,24 @@ server.tool(
 
 server.tool(
   'create_port_monitor',
-  'Create a new PORT monitor. Checks if a specific port is open on a host. URL must include port (e.g. example.com:443, 192.168.1.1:3306).',
+  'Create a new PORT monitor. Checks if a specific port is open on a host. URL must include port (e.g. example.com:443, 192.168.1.1:3306). Use protocol UDP for game servers (Rust, CS2, GMod, TF2) and anything else that does not answer on TCP.',
   {
     name: z.string().max(50).describe('Monitor name (max 50 chars)'),
     url: z.string().describe('Host:port to check (e.g. example.com:443)'),
+    protocol: z.enum(['TCP', 'UDP']).optional()
+      .describe('TCP (default) works for most services. UDP is for game servers and similar; on UDP the port counts as up only if the server replies.'),
     frequency: z.number().int().min(1).max(1440).optional()
       .describe('Check frequency in minutes (1-1440, default 5)'),
     isActive: z.boolean().optional().describe('Start monitoring immediately (default true)'),
   },
-  async ({ name, url, frequency, isActive }) => {
+  async ({ name, url, protocol, frequency, isActive }) => {
     try {
       const userIri = await getUserIri();
       const body = { name, url, type: 'PORT', user: userIri, isActive: isActive ?? true };
       if (frequency !== undefined) body.frequency = frequency;
+      // portInfo надсилаємо завжди: без нього target_port не створюється взагалі,
+      // і монітор мовчки лишається мертвим — бот такі цілі пропускає
+      body.portInfo = { isAllowIp4: true, isAllowIp6: true, portProtocol: protocol ?? 'TCP' };
       return ok(await createMonitor('/type_port', body));
     } catch (e) { return err(e); }
   }
