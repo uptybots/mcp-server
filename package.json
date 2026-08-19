@@ -1,6 +1,7 @@
 {
   "name": "uptybots-mcp-server",
-  "version": "1.0.5",
+  "version": "1.0.6",
+  "mcpName": "com.uptybots/monitoring",
   "description": "MCP server for UptyBots — connect AI assistants to your uptime monitors",
   "type": "module",
   "main": "index.js",
