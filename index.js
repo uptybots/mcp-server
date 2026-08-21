@@ -26,7 +26,7 @@ import {
 const server = new McpServer({
   name: 'uptybots',
   title: 'UptyBots',
-  version: '1.3.0',
+  version: '1.3.1',
 });
 
 // Behaviour hints. openWorldHint is true throughout: every tool reaches the

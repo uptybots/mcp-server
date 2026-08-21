@@ -4,7 +4,7 @@ Connect AI assistants like **Claude**, **Cursor**, and other MCP-compatible tool
 
 ## What is this?
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that gives AI assistants access to your UptyBots monitoring data. Ask your AI to check monitor status, review incidents, create new monitors, and more — through natural conversation.
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that gives AI assistants access to your UptyBots monitoring data. Ask your AI to check monitor status, review incidents, create new monitors, and more - through natural conversation.
 
 ## You probably want the hosted server instead
 
@@ -26,7 +26,7 @@ claude mcp add --transport http uptybots https://mcp.uptybots.com/mcp
 then run `/mcp`, pick **uptybots** and authenticate.
 
 **This package is the local alternative.** It runs on your own machine and
-authenticates with an API key instead of a browser sign-in — the right choice for
+authenticates with an API key instead of a browser sign-in - the right choice for
 MCP clients that cannot talk to remote servers, and for offline or self-contained
 setups. It exposes the same 15 tools and is not going away.
 
@@ -131,10 +131,10 @@ capability. The hosted server offers exactly the same five.
 
 | Prompt | Argument | What it asks for |
 |--------|----------|------------------|
-| `status_check` | — | What is failing right now, and since when |
+| `status_check` | none | What is failing right now, and since when |
 | `uptime_report` | `days` (optional, default 7) | Uptime and response times over a period, worst first |
 | `incident_review` | `monitor` | The failure pattern of one monitor: outage, flapping, or degradation |
-| `expiry_audit` | — | SSL certificates and domains by how soon they expire |
+| `expiry_audit` | none | SSL certificates and domains by how soon they expire |
 | `setup_monitor` | `target` | The right monitor type for a target, then create it |
 
 ## Environment Variables
@@ -146,9 +146,9 @@ capability. The hosted server offers exactly the same five.
 
 ## Documentation
 
-- [MCP Server Docs](https://uptybots.com/docs/mcp) — full setup guide and tool reference, covering both the hosted server and this one
-- [REST API Reference](https://uptybots.com/docs/api) — the API that powers the MCP server
-- [Account → Connected Applications](https://uptybots.com/account/connected-apps) — review and revoke access granted through the hosted server
+- [MCP Server Docs](https://uptybots.com/docs/mcp) - full setup guide and tool reference, covering both the hosted server and this one
+- [REST API Reference](https://uptybots.com/docs/api) - the API that powers the MCP server
+- [Account → Connected Applications](https://uptybots.com/account/connected-apps) - review and revoke access granted through the hosted server
 
 ## License
 
