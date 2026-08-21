@@ -123,6 +123,20 @@ Then point the client at the checkout:
 | `resume_monitor` | Resume a paused monitor |
 | `delete_monitor` | Delete a monitor |
 
+## Prompts (5)
+
+Starting sentences an assistant can offer instead of asking you to phrase the request
+yourself. Each one is a wording of something the tools above already do; none adds
+capability. The hosted server offers exactly the same five.
+
+| Prompt | Argument | What it asks for |
+|--------|----------|------------------|
+| `status_check` | — | What is failing right now, and since when |
+| `uptime_report` | `days` (optional, default 7) | Uptime and response times over a period, worst first |
+| `incident_review` | `monitor` | The failure pattern of one monitor: outage, flapping, or degradation |
+| `expiry_audit` | — | SSL certificates and domains by how soon they expire |
+| `setup_monitor` | `target` | The right monitor type for a target, then create it |
+
 ## Environment Variables
 
 | Variable | Required | Description |

@@ -26,7 +26,7 @@ import {
 const server = new McpServer({
   name: 'uptybots',
   title: 'UptyBots',
-  version: '1.2.0',
+  version: '1.3.0',
 });
 
 // Behaviour hints. openWorldHint is true throughout: every tool reaches the
@@ -479,6 +479,160 @@ server.registerTool(
       return ok(await getNotifications({ channel, status, page }));
     } catch (e) { return err(e); }
   }
+);
+
+// ─── PROMPTS ──────────────────────────────────────────────────────
+//
+// The same five templates as the remote server's app/src/Service/Mcp/PromptRegistry.php,
+// word for word, for the same reason the tool text is shared: an assistant that switches
+// between the hosted server and this one must get the same starting sentence.
+//
+// None of them is a capability of its own. Each is a phrasing of something the 15 tools
+// above already do, worded the way those tools actually answer it - naming the tool and
+// the arguments that matter.
+
+// Each description is used twice, in the listing and in the expansion, so it lives in one
+// place. prompts/get carries it because the spec allows it and the remote server sends it.
+const PROMPT_DESCRIPTIONS = {
+  status_check: 'Check every monitor for current failures and summarise what is broken.',
+  uptime_report: 'Summarise uptime and response times over a period, worst performers first.',
+  incident_review: 'Dig into the recent failures of one monitor and characterise the pattern.',
+  expiry_audit: 'List SSL certificates and domains by how soon they expire.',
+  setup_monitor: 'Pick the right monitor type for a target and create it.',
+};
+
+// {{placeholders}} are filled from the arguments the client passed. An optional argument
+// left out falls back to the default named in its own description; anything still
+// unreplaced is blanked, because a literal brace would read as text to the model.
+const fill = (lines, values = {}) => {
+  let text = lines.join('\n');
+  for (const [key, value] of Object.entries(values)) {
+    if (value !== undefined && value !== null && String(value) !== '') {
+      text = text.split(`{{${key}}}`).join(String(value));
+    }
+  }
+  return text.replace(/\{\{[a-z_]+\}\}/g, '');
+};
+
+const expand = (name, lines, values) => ({
+  description: PROMPT_DESCRIPTIONS[name],
+  messages: [{ role: 'user', content: { type: 'text', text: fill(lines, values) } }],
+});
+
+server.registerPrompt(
+  'status_check',
+  {
+    title: 'What is down right now',
+    description: PROMPT_DESCRIPTIONS.status_check,
+  },
+  () => expand('status_check', [
+    'Check the current state of my UptyBots monitors.',
+    '',
+    'Call list_monitors with status "down" to see what is failing, then',
+    'list_monitors with no filter so you know how many monitors exist in',
+    'total. For each failing monitor, call get_incidents to find when the',
+    'failure started and what the error was.',
+    '',
+    'Answer with the failures first: monitor name, what broke, and since',
+    'when. If nothing is down, say so in one line and give the total number',
+    'of monitors being watched.',
+  ])
+);
+
+server.registerPrompt(
+  'uptime_report',
+  {
+    title: 'Uptime report',
+    description: PROMPT_DESCRIPTIONS.uptime_report,
+    argsSchema: {
+      days: z.string().optional().describe('How many days back to report on. Defaults to 7.'),
+    },
+  },
+  ({ days }) => expand('uptime_report', [
+    'Build an uptime report for my UptyBots monitors covering the last',
+    '{{days}} days.',
+    '',
+    'Call list_monitors to get the monitors, then get_stats_daily for each',
+    'one over that period. Where a monitor looks unstable, call',
+    'get_stats_hourly on it to see whether the failures cluster at a',
+    'particular time of day.',
+    '',
+    'Lead with the worst uptime percentage, not with a list in alphabetical',
+    'order. Include average and p95 response time where it explains the',
+    'number. Say plainly if a monitor has too little history to judge.',
+  ], { days: days ?? '7' })
+);
+
+server.registerPrompt(
+  'incident_review',
+  {
+    title: 'Investigate an incident',
+    description: PROMPT_DESCRIPTIONS.incident_review,
+    argsSchema: {
+      monitor: z.string().describe('Name or id of the monitor to investigate.'),
+    },
+  },
+  ({ monitor }) => expand('incident_review', [
+    'Investigate the recent failures of the UptyBots monitor "{{monitor}}".',
+    '',
+    'Find it with list_monitors, then get_monitor for its configuration and',
+    'get_incidents for its failure history. Use get_stats_hourly around the',
+    'incidents to see how long each one lasted and whether response times',
+    'degraded before the monitor went down.',
+    '',
+    'Tell me what the pattern is: a single outage, a flapping check, or a',
+    'slow degradation. Quote the error codes rather than paraphrasing them.',
+    'If the incidents line up with the check frequency or the timeout in the',
+    "monitor's own configuration, say so - that points at the check rather",
+    'than at the service.',
+  ], { monitor })
+);
+
+server.registerPrompt(
+  'expiry_audit',
+  {
+    title: 'Certificate and domain expiry',
+    description: PROMPT_DESCRIPTIONS.expiry_audit,
+  },
+  () => expand('expiry_audit', [
+    'Audit what is about to expire in my UptyBots account.',
+    '',
+    'Call list_monitors twice, once with type "SSL" and once with type',
+    '"DOMAIN", then get_monitor on each result to read the expiry date it',
+    'reports.',
+    '',
+    'Sort by days remaining, soonest first, and mark anything under 30 days.',
+    'Note separately any monitor of those two types that is paused or has',
+    'never completed a check, because it is reporting nothing at all rather',
+    'than reporting that it is fine.',
+  ])
+);
+
+server.registerPrompt(
+  'setup_monitor',
+  {
+    title: 'Set up a new monitor',
+    description: PROMPT_DESCRIPTIONS.setup_monitor,
+    argsSchema: {
+      target: z.string().describe('What to watch: a URL, hostname, or host:port.'),
+    },
+  },
+  ({ target }) => expand('setup_monitor', [
+    'Set up UptyBots monitoring for {{target}}.',
+    '',
+    'Work out which type fits before creating anything. A web page or an',
+    'endpoint that must return a particular status is create_http_monitor;',
+    'a JSON API whose response body matters is create_api_monitor; a host',
+    'that only needs to answer at all is create_ping_monitor; a game or',
+    'database server on a specific port is create_port_monitor; a',
+    'certificate is create_ssl_monitor and a domain registration is',
+    'create_domain_monitor.',
+    '',
+    'Check list_monitors first so you do not create a duplicate. Tell me',
+    'which type you chose and why before you call the create tool, and',
+    'leave the check frequency at the default unless I asked for something',
+    'specific.',
+  ], { target })
 );
 
 // ─── START ────────────────────────────────────────────────────────
